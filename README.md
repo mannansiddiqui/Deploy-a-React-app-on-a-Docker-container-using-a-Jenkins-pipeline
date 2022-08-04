@@ -360,6 +360,8 @@ Time to write pipeline script.
 
 But before this we have to create a Dockerfile push it to GitHub repo so that when developer pushes the code job will trigger and GitHub repo files will be downloaded in worker node and this Dockerfile will be used by the Jenkins pipeline to build a new Docker image so that from this image pipeline can launch a container and deploy react app in it.
 
+### Approach-1:
+
 Here, I directly created a new file named Dockerfile in GitHub and write below content in this file then click on **Commit new file**:
 ```
 FROM nginx:latest
@@ -405,13 +407,64 @@ pipeline {
 ![91](https://user-images.githubusercontent.com/74168188/182778846-81595c1b-ff89-413e-b23a-c0033ca17442.png)
 ![92](https://user-images.githubusercontent.com/74168188/182778864-96e7457b-699f-4281-8ece-4b828fa26711.png)
 
+### Approach-2:
+
+Here, I directly created a new file named Dockerfile in GitHub and write below content in this file then click on **Commit new file**:
+```
+FROM nginx:latest
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash -
+RUN apt-get install -y nodejs
+COPY . /usr/share/nginx/html/
+WORKDIR /usr/share/nginx/html/
+RUN npm run build
+RUN cp -r build/* .
+EXPOSE 80
+```
+![93](https://user-images.githubusercontent.com/74168188/182851798-5661c82f-bb06-4663-ae85-645a900b5105.png)
+
+Now write the Groovy script to deploy react app on Docker container and click on **Save**
+
+```
+pipeline {
+    
+    agent { label 'Slave-2' }
+
+    stages {
+        
+        stage('GitHub') {
+            steps {
+                checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/mannansiddiqui/Deploy-React-app-on-Docker-container-using-jenkins-pipeline.git']]])
+            }
+        }
+        
+        stage('Deploy React App') {
+            steps {
+                sh 'sudo docker build -t mannansiddiqui/nginx-react-app:$BUILD_ID .'
+                sh 'sudo docker rmi -f mannansiddiqui/nginx-react-app:`expr $BUILD_ID - 1`'
+                sh 'sudo docker container rm -f $(sudo docker container ls -laq)'
+                sh 'sudo docker container run -dit -p 80:80 mannansiddiqui/nginx-react-app:$BUILD_ID'
+                sh 'sudo docker container ls -a'
+            }
+        }
+        
+    }
+}
+```
+![94](https://user-images.githubusercontent.com/74168188/182852480-5704b947-95b8-4d6b-a2a1-c7c7da82690d.png)
+![95](https://user-images.githubusercontent.com/74168188/182852493-d53ea5a3-6bce-4891-93cb-d29d0b1f866c.png)
+
+Console output of this job:
+![96](https://user-images.githubusercontent.com/74168188/182853121-f8f4a980-1133-41e9-94c4-14bae607203b.png)
+![97](https://user-images.githubusercontent.com/74168188/182853159-cec3ada9-b866-4f4f-9ce2-bd0456c58449.png)
+![98](https://user-images.githubusercontent.com/74168188/182853169-28f25cb9-182a-4c7c-b928-2640770d9f11.png)
+
 Lastly we have to create a firewall rule to allow port no. 80 of worker node.
 
-![93](https://user-images.githubusercontent.com/74168188/182779347-949f48a9-b0ff-49a0-8d63-c14e4e0adb16.png)
+![99](https://user-images.githubusercontent.com/74168188/182779347-949f48a9-b0ff-49a0-8d63-c14e4e0adb16.png)
 
 Now time to hit worker node <INSTANCE_PUBLIC_IP>.
 
-![94](https://user-images.githubusercontent.com/74168188/182779558-a820baaf-5632-45db-8929-9ac5cbd3164b.png)
+![100](https://user-images.githubusercontent.com/74168188/182779558-a820baaf-5632-45db-8929-9ac5cbd3164b.png)
 
 We are able to see React app.
 
