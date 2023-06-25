@@ -1,15 +1,15 @@
-# Deploy React app on Docker container via Jenkins pipeline
+# Deploy a React app on a Docker container using a Jenkins pipeline
 
 #### Description:
 
-- Launch 2 EC2 server, 1st for Jenkins and 2nd for App deployment.
-- On 1st server install and configure Jenkins
-- On 2nd server, install Docker and dependencies to create React project.
-- Create a React project.
-- Upload this react project in GitHub.
-- Make a CI/CD flow to deploy the code on Docker container via Jenkins.
+• Launch two EC2 instances, one for Jenkins and the other for app deployment.
+• Install and configure Jenkins on the first server.
+• On the second server, install Docker and its dependencies to create a React project.
+• Create a React project.
+• Push this React project to GitHub.
+• Set up a CI/CD flow to deploy the code on a Docker container using Jenkins.
 
-#### Step-1: Launch 2 EC2 server, 1st for Jenkins and 2nd for App deployment
+#### Step-1: Launch two EC2 instances, one for Jenkins and the other for app deployment.
 
 Firstly, log in to the AWS management console.
 
@@ -47,7 +47,7 @@ We are good to go to launch an instance for this. Click the Launch instance butt
 
 Similarly, create another EC2 instance for app development.
 
-#### Step-2: On 1st server install and configure Jenkins
+#### Step-2: Install and configure Jenkins on the first server.
 
 Now, take the public IP from the EC2 dashboard and use it to login inside the instance using ssh. First move to the directory where the key is downloaded. In my case it's in downloads directory.
 
@@ -205,7 +205,7 @@ Then finally click save. Now navigate to **Manage Jenkins** then **Manage Nodes 
 
 As you can see worker node is successfully connected to master node.
 
-#### Step-3: On 2nd server, install Docker and dependencies to create React project
+#### Step-3: On the second server, install Docker and its dependencies to create a React project.
 
 First login inside EC2 instance using ```sudo ssh -i <AWS_SECRET_KEY> ubuntu@<INSTANCE_PUBLIC_IP>```
 
@@ -261,7 +261,7 @@ To check nodejs is successfully installed or not use ```node -v```. Also, npm an
 
 ![65](https://user-images.githubusercontent.com/74168188/182552742-bfb4c553-ad8f-43b1-bab5-cd80b43343af.png)
 
-#### Step-4: Create a React project
+#### Step-4: Create a React project.
 
 To create react project we use yarn instead of npx. For creating react project use below commands:
 
@@ -273,7 +273,7 @@ sudo create-react-app <APP_NAME>
 ![66](https://user-images.githubusercontent.com/74168188/182571160-1e49ca4c-7974-496f-99d9-ff7418af3a7c.png)
 ![67](https://user-images.githubusercontent.com/74168188/182571291-935546ed-9c3b-4744-a4e5-4c0d998618c0.png)
 
-#### Step-5: Upload this react project in GitHub
+#### Step-5: Push this React project to GitHub.
 
 React project is successfully created now time to upload this project to GitHub. For this create an empty repo in GitHub.
 
@@ -314,7 +314,7 @@ Now time to push to GitHub using ```git push```
 
 Files/Folders are successfully pushed to GitHub repo.
 
-#### Step-6: Make a CI/CD flow to deploy the code on Docker container via Jenkins
+#### Step-6: Set up a CI/CD flow to deploy the code on a Docker container using Jenkins.
 
 Now we need to create a pipeline for next steps. But before this we have to install some plugins. First we require a **Pipeline** plugin to create a pipeline. Second we require **GitHub** plugin so that jenkins can interact with GitHub to download repo and many more things.
 
